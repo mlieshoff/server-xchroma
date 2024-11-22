@@ -31,9 +31,9 @@ fi
 cd $APP
 
 echo "Decrypt jar..."
-/root/.sdkman/candidates/java/20-oracle/bin/java -Dlog4j2.formatMsgNoLookups=true -cp libs/server-1.0.jar server.FileCipher conf/key libs/xchroma-encrypted.jar decode libs/xchroma.jar
+/root/.sdkman/candidates/java/21.0.3-oracle/bin/java -Dlog4j2.formatMsgNoLookups=true -cp libs/server-1.0.jar server.FileCipher conf/key libs/xchroma-encrypted.jar decode libs/xchroma.jar
 
 echo "Start server...."
-/root/.sdkman/candidates/java/20-oracle/bin/java -Dlog4j2.formatMsgNoLookups=true -jar libs/xchroma.jar conf/payment-production.p12 conf/key conf/token.cipher conf/config.properties conf/credentials.properties $STATUS &
+/root/.sdkman/candidates/java/21.0.3-oracle/bin/java -Dlog4j2.formatMsgNoLookups=true -jar libs/xchroma.jar conf/payment-production.p12 conf/key conf/token.cipher conf/config.properties conf/credentials.properties $STATUS &
 
 exit 1
