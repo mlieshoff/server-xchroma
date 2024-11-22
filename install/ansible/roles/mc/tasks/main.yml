@@ -1,0 +1,4 @@
+- name: Install Midnight Commander
+  apt:
+    name: mc
+    state: present
