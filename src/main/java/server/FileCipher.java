@@ -1,6 +1,9 @@
 package server;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,7 +38,7 @@ public class FileCipher {
         if ("code".equals(args[2])) {
             encryptFile(args[1], args[3], password);
         } else if ("decode".equals(args[2])) {
-            decryptFile(args[3], args[1], password);
+            decryptFile(args[1], args[3], password);
         } else {
             showHelp();
         }
@@ -125,6 +128,17 @@ public class FileCipher {
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
         KeySpec spec = new PBEKeySpec(password, salt, 65536, 256);
         return new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
+    }
+
+    private static void copy(InputStream inputStream, OutputStream outputStream) throws IOException {
+        byte[] bytes = new byte[64];
+        int size;
+        while ((size = inputStream.read(bytes)) != -1) {
+            outputStream.write(bytes, 0, size);
+        }
+        outputStream.flush();
+        outputStream.close();
+        inputStream.close();
     }
 
 }
