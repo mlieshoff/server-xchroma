@@ -9,6 +9,8 @@ DIRECTORY=/home/$APP_NAME/server
 STATUS=$DIRECTORY/$APP_NAME.pid
 APP_DIR=$DIRECTORY/server/apps/$APP_NAME
 
+source "$APP_DIR/server-vars.sh"
+
 cd $DIRECTORY/server
 
 pwd
@@ -29,8 +31,6 @@ if [ -f "$STATUS" ]; then
     fi
   done
 fi
-
-source "conf/server-vars.sh"
 
 cd $APP_DIR/libs
 
