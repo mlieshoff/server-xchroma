@@ -37,13 +37,15 @@ cd $APP_DIR/libs
 echo download server jar from dropbox...
 curl -X POST https://content.dropboxapi.com/2/files/download \
     --header "Authorization: Bearer $DROPBOX_TOKEN" \
-    --header "Dropbox-API-Arg: {\"path\":\"/Apps/SERVER_TRANSFER/server-1.0.jar\"}"
+    --header "Dropbox-API-Arg: {\"path\":\"/Apps/SERVER_TRANSFER/server-1.0.jar\"}" \
+    --ouput server-1.0.jar
 echo
 
 echo download $APP_NAME jar from dropbox...
 curl -X POST https://content.dropboxapi.com/2/files/download \
     --header "Authorization: Bearer $DROPBOX_TOKEN" \
-    --header "Dropbox-API-Arg: {\"path\":\"/Apps/SERVER_TRANSFER/$APP_NAME-encrypted.jar\"}"
+    --header "Dropbox-API-Arg: {\"path\":\"/Apps/SERVER_TRANSFER/$APP_NAME-encrypted.jar\"}" \
+    --output $APP_NAME-encrypted.jar
 echo
 
 cd ..
