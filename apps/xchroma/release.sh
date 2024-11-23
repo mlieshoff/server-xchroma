@@ -9,7 +9,7 @@ DIRECTORY=/home/$APP_NAME/server
 STATUS=$DIRECTORY/$APP_NAME.pid
 APP_DIR=$DIRECTORY/server/apps/$APP_NAME
 
-source "$APP_DIR/server-vars.sh"
+source "$APP_DIR/conf/server-vars.sh"
 
 cd $DIRECTORY/server
 
