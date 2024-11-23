@@ -30,6 +30,8 @@ if [ -f "$STATUS" ]; then
   done
 fi
 
+source "conf/server-vars.sh"
+
 cd $APP_DIR/libs
 
 echo download server jar from dropbox...
