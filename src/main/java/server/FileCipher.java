@@ -1,9 +1,6 @@
 package server;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,9 +10,7 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
+import javax.crypto.*;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -33,12 +28,17 @@ public class FileCipher {
         if (args == null || args.length != 4) {
             showHelp();
         }
+
         File keyFile = new File(args[0]);
         String password = new String(Files.readAllBytes(keyFile.toPath()));
+        File inFile = new File(args[1]);
+        File outFile = new File(args[3]);
+        FileInputStream fileInputStream = new FileInputStream(inFile);
+        FileOutputStream fileOutputStream = new FileOutputStream(outFile);
         if ("code".equals(args[2])) {
-            encryptFile(args[1], args[3], password);
+            encrypt(fileInputStream, fileOutputStream, password);
         } else if ("decode".equals(args[2])) {
-            decryptFile(args[1], args[3], password);
+            decrypt(fileInputStream, fileOutputStream, password);
         } else {
             showHelp();
         }
@@ -51,69 +51,31 @@ public class FileCipher {
         System.exit(1);
     }
 
-    private static byte[] encrypt(byte[] pText, String password) throws Exception {
-
-        // 16 bytes salt
+    private static void encrypt(InputStream inputStream, OutputStream outputStream, String password) throws Exception {
         byte[] salt = getRandomNonce(SALT_LENGTH_BYTE);
-
-        // GCM recommended 12 bytes iv?
         byte[] iv = getRandomNonce(IV_LENGTH_BYTE);
-
-        // secret key from password
         SecretKey aesKeyFromPassword = getAESKeyFromPassword(password.toCharArray(), salt);
-
         Cipher cipher = Cipher.getInstance(ENCRYPT_ALGO);
-
-        // ASE-GCM needs GCMParameterSpec
         cipher.init(Cipher.ENCRYPT_MODE, aesKeyFromPassword, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
-
-        byte[] cipherText = cipher.doFinal(pText);
-
-        // prefix IV and Salt to cipher text
-        return ByteBuffer.allocate(iv.length + salt.length + cipherText.length)
+        OutputStream result = new BufferedOutputStream(outputStream);
+        result.write(ByteBuffer.allocate(iv.length + salt.length)
                 .put(iv)
                 .put(salt)
-                .put(cipherText)
-                .array();
+                .array());
+        CipherOutputStream cipherOutputStream = new CipherOutputStream(result, cipher);
+        copy(inputStream, cipherOutputStream);
+        result.close();
     }
 
-    // we need the same password, salt and iv to decrypt it
-    private static byte[] decrypt(byte[] cText, String password) throws Exception {
-
-        // get back the iv and salt that was prefixed in the cipher text
-        ByteBuffer bb = ByteBuffer.wrap(cText);
-
-        byte[] iv = new byte[12];
-        bb.get(iv);
-
-        byte[] salt = new byte[16];
-        bb.get(salt);
-
-        byte[] cipherText = new byte[bb.remaining()];
-        bb.get(cipherText);
-
-        // get back the aes key from the same password and salt
+    private static void decrypt(InputStream inputStream, OutputStream outputStream, String password) throws Exception {
+        InputStream input = new BufferedInputStream(inputStream);
+        byte[] iv = input.readNBytes(IV_LENGTH_BYTE);
+        byte[] salt = input.readNBytes(SALT_LENGTH_BYTE);
         SecretKey aesKeyFromPassword = getAESKeyFromPassword(password.toCharArray(), salt);
-
         Cipher cipher = Cipher.getInstance(ENCRYPT_ALGO);
-
         cipher.init(Cipher.DECRYPT_MODE, aesKeyFromPassword, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
-
-        return cipher.doFinal(cipherText);
-    }
-
-    private static void encryptFile(String fromFile, String toFile, String password) throws Exception {
-        byte[] fileContent = Files.readAllBytes(Paths.get(fromFile));
-        byte[] encryptedText = encrypt(fileContent, password);
-        Path path = Paths.get(toFile);
-        Files.write(path, encryptedText);
-    }
-
-    private static void decryptFile(String fromEncryptedFile, String toDecryptedFile, String password) throws Exception {
-        byte[] fileContent = Files.readAllBytes(Paths.get(fromEncryptedFile));
-        byte[] decrypted = decrypt(fileContent, password);
-        Path path = Paths.get(toDecryptedFile);
-        Files.write(path, decrypted);
+        CipherInputStream cipherInputStream = new CipherInputStream(input, cipher);
+        copy(cipherInputStream, outputStream);
     }
 
     private static byte[] getRandomNonce(int numBytes) {
