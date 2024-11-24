@@ -1,2 +1,1 @@
-# server-xchroma
-XChroma Server Infrastructure
+# server
