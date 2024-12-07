@@ -18,7 +18,7 @@ mvn clean install
 
 echo encrypt...
 pwd
-java -cp ../server-$APP_NAME/target/server-1.0.jar server.FileCipher ../server_credentials/conf/$APP_NAME/key backend/target/backend-1.0.0.jar code ../server-$APP_NAME/target/$APP_NAME-encrypted.jar
+java -jar ../server-$APP_NAME/target/server-1.0.jar ../server_credentials/conf/$APP_NAME/key backend/target/backend-1.0.0.jar code ../server-$APP_NAME/target/$APP_NAME-encrypted.jar
 
 echo copy credentials...
 cp ../server_credentials/conf/$APP_NAME/encrypted/credentials.properties ../server-$APP_NAME/apps/$APP_NAME/conf
