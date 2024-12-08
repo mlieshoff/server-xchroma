@@ -57,7 +57,7 @@ fi
 cd ..
 
 echo "Decrypt jar..."
-/root/.sdkman/candidates/java/21.0.3-oracle/bin/java -Dlog4j2.formatMsgNoLookups=true -jar libs/server-1.0.jar conf/key libs/$APP_NAME-encrypted.jar decode libs/$APP_NAME.jar
+/root/.sdkman/candidates/java/21.0.3-oracle/bin/java -Xmx1G -Dlog4j2.formatMsgNoLookups=true -jar libs/server-1.0.jar conf/key libs/$APP_NAME-encrypted.jar decode libs/$APP_NAME.jar
 
 echo "Start server...."
 /root/.sdkman/candidates/java/21.0.3-oracle/bin/java -Dlog4j2.formatMsgNoLookups=true -jar libs/$APP_NAME.jar conf/key conf/config.properties conf/credentials.properties $STATUS &
