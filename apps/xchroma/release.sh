@@ -32,10 +32,11 @@ if [ -f "$STATUS" ]; then
   done
 fi
 
+cd $APP_DIR/libs
+
 if [ $1 = 'skip-download' ]; then
 	echo "Skip download"
 else
-  cd $APP_DIR/libs
 
   echo download server jar from dropbox...
   curl -X POST https://content.dropboxapi.com/2/files/download \
@@ -51,8 +52,9 @@ else
       --output $APP_NAME-encrypted.jar
   echo
 
-  cd ..
 fi
+
+cd ..
 
 echo "Decrypt jar..."
 /root/.sdkman/candidates/java/21.0.3-oracle/bin/java -Dlog4j2.formatMsgNoLookups=true -jar libs/server-1.0.jar conf/key libs/$APP_NAME-encrypted.jar decode libs/$APP_NAME.jar
