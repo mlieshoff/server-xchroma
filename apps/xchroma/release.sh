@@ -34,24 +34,30 @@ fi
 
 cd $APP_DIR/libs
 
-echo download server jar from dropbox...
-curl -X POST https://content.dropboxapi.com/2/files/download \
-    --header "Authorization: Bearer $DROPBOX_TOKEN" \
-    --header "Dropbox-API-Arg: {\"path\":\"/Apps/SERVER_TRANSFER/server-1.0.jar\"}" \
-    --output server-1.0.jar
-echo
+if [ $1 = 'skip-download' ]; then
+	echo "Skip download"
+else
 
-echo download $APP_NAME jar from dropbox...
-curl -X POST https://content.dropboxapi.com/2/files/download \
-    --header "Authorization: Bearer $DROPBOX_TOKEN" \
-    --header "Dropbox-API-Arg: {\"path\":\"/Apps/SERVER_TRANSFER/$APP_NAME-encrypted.jar\"}" \
-    --output $APP_NAME-encrypted.jar
-echo
+  echo download server jar from dropbox...
+  curl -X POST https://content.dropboxapi.com/2/files/download \
+      --header "Authorization: Bearer $DROPBOX_TOKEN" \
+      --header "Dropbox-API-Arg: {\"path\":\"/Apps/SERVER_TRANSFER/server-1.0.jar\"}" \
+      --output server-1.0.jar
+  echo
+
+  echo download $APP_NAME jar from dropbox...
+  curl -X POST https://content.dropboxapi.com/2/files/download \
+      --header "Authorization: Bearer $DROPBOX_TOKEN" \
+      --header "Dropbox-API-Arg: {\"path\":\"/Apps/SERVER_TRANSFER/$APP_NAME-encrypted.jar\"}" \
+      --output $APP_NAME-encrypted.jar
+  echo
+
+fi
 
 cd ..
 
 echo "Decrypt jar..."
-/root/.sdkman/candidates/java/21.0.3-oracle/bin/java -Dlog4j2.formatMsgNoLookups=true -cp libs/server-1.0.jar server.FileCipher conf/key libs/$APP_NAME-encrypted.jar decode libs/$APP_NAME.jar
+/root/.sdkman/candidates/java/21.0.3-oracle/bin/java -Xmx1G -Dlog4j2.formatMsgNoLookups=true -jar libs/server-1.0.jar conf/key libs/$APP_NAME-encrypted.jar decode libs/$APP_NAME.jar
 
 echo "Start server...."
 /root/.sdkman/candidates/java/21.0.3-oracle/bin/java -Dlog4j2.formatMsgNoLookups=true -jar libs/$APP_NAME.jar conf/key conf/config.properties conf/credentials.properties $STATUS &

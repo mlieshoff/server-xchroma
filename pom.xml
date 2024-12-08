@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.4</version>
+        <relativePath/>
+    </parent>
     <artifactId>server</artifactId>
     <packaging>jar</packaging>
     <version>1.0</version>
@@ -26,6 +32,9 @@
             <url>http://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </licenses>
+    <properties>
+        <start-class>server.FileCipher</start-class>
+    </properties>
     <build>
         <plugins>
             <plugin>
@@ -66,6 +75,10 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>changelog-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -82,6 +95,11 @@
         </extensions>
     </build>
     <dependencies>
+        <dependency>
+            <groupId>com.psiclops</groupId>
+            <artifactId>cryptix</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
     <distributionManagement>
         <repository>
